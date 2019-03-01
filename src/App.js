@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
@@ -13,24 +12,35 @@ class App extends Component {
 
   componentDidMount(){
     this.fetchProducts();
+    this.fetchPrice();
   }
 
   fetchProducts = async () => {
     console.log('Fetching Products From Server')
-    const response = await fetch('/api/products');
+    const response = await fetch('/products');
     const products = await response.json();
     this.setState({
       products: products
-    })
+    });
     console.log(products)
+  };
+
+  fetchPrice = async () =>{
+    console.log('Fetching Price');
+    const response = await fetch('/api/priceRule');
+    const price = await response.json();
+    console.log(price);
   }
   render() {
     return (
       <div className="App">
         <h2>Products</h2>
         <ul>
-        {this.state.products.map( product => 
-          <li>{product.title}</li>
+        {this.state.products.map( (product,i) => 
+          <div key={i}>
+          <img src={product.image} alt='' width='100px' height='100px'/>
+          <li>{product.title} </li>
+          </div>
         )}
         </ul>
       </div>
