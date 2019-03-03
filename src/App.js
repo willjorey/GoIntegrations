@@ -12,11 +12,11 @@ class App extends Component {
 
   componentDidMount(){
     this.fetchProducts();
-    this.fetchPrice();
   }
 
   fetchProducts = async () => {
-    console.log('Fetching Products From Server')
+    console.log('Importing Products from Shopify');
+    console.log('Fetching Products From Database')
     const response = await fetch('/products');
     const products = await response.json();
     this.setState({
@@ -25,23 +25,18 @@ class App extends Component {
     console.log(products)
   };
 
-  fetchPrice = async () =>{
-    console.log('Fetching Price');
-    const response = await fetch('/api/priceRule');
-    const price = await response.json();
-    console.log(price);
-  };
-
   onBuy = (item) =>{
     alert('Draft Order Sent');
     fetch('/draftOrder', {
       method:'post',
       headers: {'Content-Type': 'application/json'},
-      body:{
-        id: item.id,
-        title: item.title,
-        price: item.price
-      }
+      body:JSON.stringify({
+        "variant_id": item._id,
+        "product_id": item.product_id,
+        "title": item.title,
+        "price": item.price,
+        "quantity": 1,
+      })
     })
   };
   render() {
