@@ -1,11 +1,16 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const bodyParser = require("body-parser");
+
 const password = 'i9asgYfGpWXIf1Tl';
 
-const Product = require('./models/product')
+const Product = require('./models/product');
 
-mongoose.connect('mongodb+srv://William:'+ password +'@mycluster-gea94.mongodb.net/test?retryWrites=true',{ useNewUrlParser: true })
+mongoose.connect('mongodb+srv://William:'+ password +'@mycluster-gea94.mongodb.net/test?retryWrites=true',{ useNewUrlParser: true });
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 const Shopify = require('shopify-api-node');
  
@@ -19,16 +24,20 @@ const shopify = new Shopify({
 shopify.product.list().then( res => {
     for (let item of res){
         if(item.title !== 'Testing'){
-            var product = new Product({
+            var product = new Product( obj = {
                 _id: item.id,
                 title: item.title,
-                image: item.image.src
-            })
+                image: item.image.src,
+                price: item.variants[0].price * 0.75
+            });
             product.save()
+            .then(result => console.log(result))
+            .catch(err => console.log(err))
         }
     }
 }
 )
+
 
 app.get('/products', (req, res) => {
     Product.find().exec().then(doc => {
@@ -37,9 +46,17 @@ app.get('/products', (req, res) => {
     })
 })
 
-app.get('/api/priceRule', async (req, res) => {
-    const product = await shopify.priceRule.list();
-    res.json(product)
+app.post('/draftOrder', (req, res) => {
+    var order = {
+        line_items: [req.body]
+    };
+    shopify.draftOrder.create({line_items: {}})
+    .then( res => console.log(res))
+    .catch( err => console.log(err))
+    res.status(201).json({
+        message: "Handling POST requests to /draftOrder",
+        draft_order: order,
+      });
 });
 
 module.exports = app;

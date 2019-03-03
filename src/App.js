@@ -30,7 +30,20 @@ class App extends Component {
     const response = await fetch('/api/priceRule');
     const price = await response.json();
     console.log(price);
-  }
+  };
+
+  onBuy = (item) =>{
+    alert('Draft Order Sent');
+    fetch('/draftOrder', {
+      method:'post',
+      headers: {'Content-Type': 'application/json'},
+      body:{
+        id: item.id,
+        title: item.title,
+        price: item.price
+      }
+    })
+  };
   render() {
     return (
       <div className="App">
@@ -39,7 +52,8 @@ class App extends Component {
         {this.state.products.map( (product,i) => 
           <div key={i}>
           <img src={product.image} alt='' width='100px' height='100px'/>
-          <li>{product.title} </li>
+          <li>{product.title} <br/> ${product.price}</li>
+          <button onClick={() => this.onBuy(product)}>Buy!</button>
           </div>
         )}
         </ul>
