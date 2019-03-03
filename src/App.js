@@ -16,13 +16,13 @@ class App extends Component {
 
   fetchProducts = async () => {
     console.log('Importing Products from Shopify');
-    console.log('Fetching Products From Database')
+    console.log('Fetching Products From Database');
     const response = await fetch('/products');
     const products = await response.json();
     this.setState({
       products: products
     });
-    console.log(products)
+    console.log(products);
   };
 
   onBuy = (item) =>{
@@ -43,15 +43,23 @@ class App extends Component {
     return (
       <div className="App">
         <h2>Products</h2>
-        <ul>
-        {this.state.products.map( (product,i) => 
-          <div key={i}>
-          <img src={product.image} alt='' width='100px' height='100px'/>
-          <li>{product.title} <br/> ${product.price}</li>
-          <button onClick={() => this.onBuy(product)}>Buy!</button>
-          </div>
-        )}
-        </ul>
+        <div id='container'>
+          <table align='center'> 
+            <tbody>
+              <tr>
+                  {this.state.products.map( (product,i) => 
+                    <div key={i} id='product-container'>
+                      <td>
+                      <img src={product.image} alt='' width='278px' height='278px'/>
+                      <p>{product.title} <br/> <h3>${product.price.toFixed(2)}</h3></p>                    
+                      <button id="buy-button" onClick={() => this.onBuy(product)}>Buy!</button>
+                      </td>
+                    </div>
+                  )}
+              </tr>
+            </tbody>
+        </table>
+        </div>
       </div>
     );
   }
